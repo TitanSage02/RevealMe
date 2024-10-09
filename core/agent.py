@@ -8,7 +8,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-from utils.data_formatter import validate_responses, validate_super_agent_response
+from utils.data_formatter import convert_json_format, validate_super_agent_response
 
 from agents.linkedin_agent import LinkedinAgent
 from agents.facebook_agent import FacebookAgent
@@ -34,17 +34,19 @@ class SuperAgent:
 
         self.agent_name = "SuperOSINT"
         self.brain = GeminiAI()
+        
         # self.task_manager = TaskManager()
+        
         self.agent_mapping = {
-            "Pilp": PilpAgent(),
-            "Whois": WhoisAgent(),
-            "Github": GithubAgent(),
-            "Twitter": TwitterAgent(),
-            "breachData": BreachData(),
-            "linkedin": LinkedinAgent(),
-            "facebook": FacebookAgent(),
-            "Instagram": InstagramAgent(),
-            "GoogleSearch": GoogleSearch(),
+            "pilp_agent": PilpAgent(),
+            "whois_agent": WhoisAgent(),
+            "github_agent": GithubAgent(),
+            "twitter_agent": TwitterAgent(),
+            "breach_agent": BreachData(),
+            "linkedin_agent": LinkedinAgent(),
+            "facebook_agent": FacebookAgent(),
+            "instagram_agent": InstagramAgent(),
+            "googleSearch_agent": GoogleSearch(),
         }
 
         self.tools = {tool: self.agent_mapping[tool].description() for tool in self.agent_mapping}
@@ -53,6 +55,7 @@ class SuperAgent:
         """
         Envoie une requête au LLM pour formuler une stratégie de réponse.
         """
+        
         data = {
             'agent_name': self.agent_name,
             'user_query': message,
@@ -64,8 +67,8 @@ class SuperAgent:
 
         print(f"\n\n\n\n {response} \n\n\n")
 
-        # Valider la réponse renvoyée par le LLM
-        return validate_responses(response)
+        ans = convert_json_format(response) # Valider la réponse renvoyée par le LLM
+        return ans
 
     def run_agents_in_parallel(self, agents_to_run):
         """
@@ -94,7 +97,7 @@ class SuperAgent:
         """
         Exécute l'agent spécifié avec ses paramètres et retourne son résultat.
         """
-        agent_module = self.agent_mapping.get(agent_name)
+        agent_module = self.agent_mapping.get(str(agent_name).lower)
         if agent_module:
             return agent_module.run(params)  # Chaque agent doit avoir une méthode `run(params)`
         else:
@@ -117,7 +120,7 @@ class SuperAgent:
             
 
         # Indiquer que la mise à jour des agents est terminée
-        super_agent_response[agents_run] = agents_run 
+        super_agent_response["agents_run"] = agents_run 
         super_agent_response["next_steps"] = {}
 
         return super_agent_response
@@ -135,8 +138,12 @@ class SuperAgent:
         if not super_agent_response:
             raise ValueError("Invalid initial response format from SuperAgent")
 
+
+        # print("Agent response", type(super_agent_response))
+        # return 0
+        
         # Étape 3: Boucle de traitement jusqu'à la fin de la mission
-        while not super_agent_response.get("is_final", False):
+        while not super_agent_response["is_final"]:
             
             # Valider la réponse du SuperAgent
             while not validate_super_agent_response(super_agent_response):
@@ -170,7 +177,7 @@ class SuperAgent:
                 print("Invalid response format after agent execution.")
                 raise ValueError("Failed to validate SuperAgent response after execution.")
 
-        print("SuperAgent Response Validated Successfully!")
+        print("SuperAgent finale response !")
         return super_agent_response
 
 # Exemple d'utilisation

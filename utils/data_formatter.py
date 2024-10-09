@@ -31,71 +31,76 @@ def retry_wrapper(func):
 
     return wrapper
 
-def validate_responses(func):
+def convert_json_format(text : str):
     """
     Valide et nettoie les réponses JSON provenant des agents ou du super agent.
     """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        response = str(args[0]).strip()  # Convertir en chaîne et éliminer les espaces
 
-        # Tentative 1: Directe
+    response = text.strip()  # Convertir en chaîne et éliminer les espaces
+
+    # Tentative 1: Directe
+    try:
+        response_json = json.loads(response)
+        print("Valid JSON (Direct):", type(response_json))
+        # args = (response_json,) + args[1:]  # Remplacer la réponse par la version JSON
+        # return func(*args, **kwargs)
+        return response_json
+
+    except json.JSONDecodeError:
+        pass
+
+    # Tentative 2: JSON entre backticks
+    try:
+        response_json = json.loads(response.split("```")[1].strip())
+        print("Valid JSON (Backticks):", type(response_json))
+        # args = (response_json,) + args[1:]  
+        # return func(*args, **kwargs)
+        return response_json
+
+    except (IndexError, json.JSONDecodeError):
+        pass
+
+    # Tentative 3: Extraction JSON entre accolades
+    try:
+        start_index = response.find('{')
+        end_index = response.rfind('}')
+        if start_index != -1 and end_index != -1:
+            json_str = response[start_index:end_index + 1]
+            response_json = json.loads(json_str)
+            print("Valid JSON (Extracted Braces):", type(response_json))
+            # args = (response_json,) + args[1:]  
+            # return func(*args, **kwargs)
+            return response_json
+
+    except json.JSONDecodeError:
+        pass
+
+    # Tentative 4: Validation ligne par ligne
+    for line in response.splitlines():
         try:
-            response_json = json.loads(response)
-            print("Valid JSON (Direct):", type(response_json))
-            args = (response_json,) + args[1:]  # Remplacer la réponse par la version JSON
-            return func(*args, **kwargs)
+            response_json = json.loads(line)
+            print("Valid JSON (Line-by-line):", type(response_json))
+            # args = (response_json,) + args[1:]  
+            # return func(*args, **kwargs)
+            return response_json
 
         except json.JSONDecodeError:
-            pass
+            continue  # Passer à la ligne suivante
 
-        # Tentative 2: JSON entre backticks
-        try:
-            response_json = json.loads(response.split("```")[1].strip())
-            print("Valid JSON (Backticks):", type(response_json))
-            args = (response_json,) + args[1:]  
-            return func(*args, **kwargs)
+    return False
 
-        except (IndexError, json.JSONDecodeError):
-            pass
-
-        # Tentative 3: Extraction JSON entre accolades
-        try:
-            start_index = response.find('{')
-            end_index = response.rfind('}')
-            if start_index != -1 and end_index != -1:
-                json_str = response[start_index:end_index + 1]
-                response_json = json.loads(json_str)
-                print("Valid JSON (Extracted Braces):", type(response_json))
-                args = (response_json,) + args[1:]  
-                return func(*args, **kwargs)
-
-        except json.JSONDecodeError:
-            pass
-
-        # Tentative 4: Validation ligne par ligne
-        for line in response.splitlines():
-            try:
-                response_json = json.loads(line)
-                print("Valid JSON (Line-by-line):", type(response_json))
-                args = (response_json,) + args[1:]  
-                return func(*args, **kwargs)
-
-            except json.JSONDecodeError:
-                continue  # Passer à la ligne suivante
-
-        emit_agent("error", "Failed to parse response as JSON")
-        return False
-
-    return wrapper
 
 @retry_wrapper
-@validate_responses
 def validate_super_agent_response(response):
     """
     Valide la réponse JSON produite par le super agent pour s'assurer qu'elle suit le format attendu.
     """
     required_keys = [ "query", "agents_run", "next_steps", "is_final", "final_result"]
+
+    try : 
+        response = convert_json_format(response)
+    except AttributeError :
+        pass
 
     for key in required_keys:
         if key not in response:
