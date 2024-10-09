@@ -144,8 +144,9 @@ class SuperAgent:
         
         # Étape 3: Boucle de traitement jusqu'à la fin de la mission
         
-        print("type : ", type(super_agent_response))
-        return
+        # print("type : ", type(super_agent_response))
+        # return
+        
         while not super_agent_response["is_final"]:
             
             # Valider le format réponse du SuperAgent
