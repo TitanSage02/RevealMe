@@ -3,12 +3,12 @@ import concurrent.futures
 
 import sys
 import os
-
+ 
 # Ajoute le répertoire racine du projet à sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-from utils.data_formatter import convert_json_format, validate_super_agent_response
+from utils.data_formatter import convert_json_format, validate_super_agent_format_response
 
 from agents.linkedin_agent import LinkedinAgent
 from agents.facebook_agent import FacebookAgent
@@ -67,8 +67,7 @@ class SuperAgent:
 
         print(f"\n\n\n\n {response} \n\n\n")
 
-        ans = convert_json_format(response) # Valider la réponse renvoyée par le LLM
-        return ans
+        return response
 
     def run_agents_in_parallel(self, agents_to_run):
         """
@@ -97,11 +96,12 @@ class SuperAgent:
         """
         Exécute l'agent spécifié avec ses paramètres et retourne son résultat.
         """
-        agent_module = self.agent_mapping.get(str(agent_name).lower)
-        if agent_module:
-            return agent_module.run(params)  # Chaque agent doit avoir une méthode `run(params)`
-        else:
-            raise ValueError(f"Unknown agent: {agent_name}")
+        agent_module = self.agent_mapping[str(agent_name).lower()]
+
+        # if agent_module:
+        return agent_module.run(params)  # Chaque agent doit avoir une méthode `run(params)`
+        # else:
+        #    raise ValueError(f"Unknown agent: {agent_name}")
 
     def compile_responses(self, super_agent_response, agent_results):
         """
@@ -143,12 +143,15 @@ class SuperAgent:
         # return 0
         
         # Étape 3: Boucle de traitement jusqu'à la fin de la mission
+        
+        print("type : ", type(super_agent_response))
+        return
         while not super_agent_response["is_final"]:
             
-            # Valider la réponse du SuperAgent
-            while not validate_super_agent_response(super_agent_response):
-                print("Invalid response structure. Retrying...")
-                super_agent_response = self.query(super_agent_response)
+            # Valider le format réponse du SuperAgent
+            # while not validate_super_agent_response(super_agent_response):
+            #     print("Invalid response structure. Retrying...")
+            #     super_agent_response = self.query(super_agent_response)
 
             # Extraire les agents à exécuter avec leurs paramètres
             next_agents = super_agent_response.get("next_steps", [])
@@ -173,7 +176,7 @@ class SuperAgent:
             super_agent_response = self.compile_responses(super_agent_response, agent_results)
 
             # Valider la réponse mise à jour
-            if not validate_super_agent_response(super_agent_response):
+            if not validate_super_agent_format_response(super_agent_response):
                 print("Invalid response format after agent execution.")
                 raise ValueError("Failed to validate SuperAgent response after execution.")
 

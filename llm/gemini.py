@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-from utils.data_formatter import validate_super_agent_response, retry_wrapper
+from utils.data_formatter import validate_super_agent_format_response, retry_wrapper
 from .base_llm import BaseLLM
 
 load_dotenv()
@@ -41,9 +41,8 @@ class GeminiAI(BaseLLM):
         chat_session = self.start_chat()
         response = chat_session.send_message(message).text
         
-        if not validate_super_agent_response(response):
-            return False
-        
+        response = validate_super_agent_format_response(response)
+
         return response
 
 # Usage

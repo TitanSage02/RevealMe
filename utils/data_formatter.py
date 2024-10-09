@@ -41,7 +41,7 @@ def convert_json_format(text : str):
     # Tentative 1: Directe
     try:
         response_json = json.loads(response)
-        print("Valid JSON (Direct):", type(response_json))
+        # print("Valid JSON (Direct):", type(response_json))
         # args = (response_json,) + args[1:]  # Remplacer la réponse par la version JSON
         # return func(*args, **kwargs)
         return response_json
@@ -91,16 +91,16 @@ def convert_json_format(text : str):
 
 
 @retry_wrapper
-def validate_super_agent_response(response):
+def validate_super_agent_format_response(response) -> dict:
     """
     Valide la réponse JSON produite par le super agent pour s'assurer qu'elle suit le format attendu.
     """
     required_keys = [ "query", "agents_run", "next_steps", "is_final", "final_result"]
 
-    try : 
-        response = convert_json_format(response)
-    except AttributeError :
-        pass
+    response = convert_json_format(response)
+
+    if not response:
+        return 
 
     for key in required_keys:
         if key not in response:
@@ -116,5 +116,5 @@ def validate_super_agent_response(response):
             emit_agent("error", f"Invalid agent format: {agent}")
             return False
 
-    print("SuperAgent response validated successfully.")
-    return True
+    print("SuperAgent response validated successfully !")
+    return response
