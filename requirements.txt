@@ -1,0 +1,9 @@
+# For llm
+openai
+google-generativeai
+
+# Templates
+jinja2
+
+# Others
+python-dotenv
