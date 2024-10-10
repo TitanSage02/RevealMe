@@ -4,7 +4,6 @@ from .base_agent import Agent
 class BreachData(Agent):
     def __init__(self):
         super().__init__("Agent BreachData")
-        self.log_result("Agent BreachData started with success !")
 
     def description(self) -> str:
         text = """ Cet agent vérifie si une adresse e-mail ou un 

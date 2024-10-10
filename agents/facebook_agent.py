@@ -4,7 +4,6 @@ from .base_agent import Agent
 class FacebookAgent(Agent):
     def __init__(self):
         super().__init__("FacebookAgent")
-        self.log_result("Agent FacebookAgent started with success !")
 
     def description(self) -> str:
         text = """ Cet agent extrait les publications publiques, 

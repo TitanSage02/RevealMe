@@ -4,7 +4,6 @@ from .base_agent import Agent
 class WhoisAgent(Agent):
     def __init__(self):
         super().__init__("WhoisAgent")
-        self.log_result("Agent WhoisAgent started with success !")
 
     def description(self) -> str:
         text = """ Cet agent interroge les enregistrements de domaines 

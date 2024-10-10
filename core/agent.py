@@ -77,7 +77,7 @@ class SuperAgent:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_agent = {executor.submit(self.execute_agent, agent["agent_name"], agent["parameters"]): agent for agent in agents_to_run}
 
-            # agents_to_run = [{"agent_name" : str },{"parameters" : str}, {"status":}, {"response_data":}]
+            # format : agents_to_run = [{"agent_name" : str },{"parameters" : str}, {"status":}, {"response_data":}]
 
             for future in concurrent.futures.as_completed(future_to_agent):
                 agent = future_to_agent[future]
@@ -131,7 +131,7 @@ class SuperAgent:
         Gère tout le cycle de vie de la requête, de la sélection des agents à la compilation finale.
         """
 
-        # Étape 1: Initialiser la réponse du Super Agent
+        # Étape 1: Initialiser la réponse du Super Agent (format JSON)
         super_agent_response = self.query(query)
 
         # Étape 2: Valider la réponse initiale
@@ -146,7 +146,7 @@ class SuperAgent:
         
         # print("type : ", type(super_agent_response))
         # return
-        
+
         while not super_agent_response["is_final"]:
             
             # Valider le format réponse du SuperAgent

@@ -4,7 +4,6 @@ from .base_agent import Agent
 class GithubAgent(Agent):
     def __init__(self):
         super().__init__("GithubAgent")
-        self.log_result("Agent GithubAgent started with success !")
 
     def description(self) -> str:
         text = """ Cet agent récupère les projets et contributions 

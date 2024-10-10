@@ -4,7 +4,6 @@ from .base_agent import Agent
 class LinkedinAgent(Agent):
     def __init__(self):
         super().__init__("LinkedinAgent")
-        self.log_result("Agent LinkedinAgent started with success !")
 
     def description(self) -> str:
         text = """ Cet agent collecte les informations professionnelles 

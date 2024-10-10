@@ -4,7 +4,6 @@ from .base_agent import Agent
 class PilpAgent(Agent):
     def __init__(self):
         super().__init__("PilpAgent")
-        self.log_result("Agent PilpAgent started with success !")
 
     def description(self) -> str:
         text = """ Regroupe les profils sociaux d’une personne à partir 

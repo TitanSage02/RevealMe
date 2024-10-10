@@ -4,7 +4,6 @@ from .base_agent import Agent
 class InstagramAgent(Agent):
     def __init__(self):
         super().__init__("InstagramAgent")
-        self.log_result("Agent InstagramAgent started with success !")
 
     def description(self) -> str:
         text = """ Cet Agent récupère les publications publiques, 

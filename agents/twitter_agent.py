@@ -4,7 +4,6 @@ from .base_agent import Agent
 class TwitterAgent(Agent):
     def __init__(self):
         super().__init__("TwitterAgent")
-        self.log_result("Agent TwitterAgent started with success !")
 
     def description(self) -> str:
         text = """ Cet agent analyse les tweets, les abonnés, et 

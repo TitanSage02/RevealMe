@@ -36,8 +36,8 @@ def convert_json_format(text : str):
     Valide et nettoie les réponses JSON provenant des agents ou du super agent.
     """
 
-    if isinstance(dict, text):
-        return True
+    if isinstance(text, dict):
+        return text
 
     response = text.strip()  # Convertir en chaîne et éliminer les espaces
 

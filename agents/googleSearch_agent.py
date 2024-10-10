@@ -4,7 +4,6 @@ from .base_agent import Agent
 class GoogleSearch(Agent):
     def __init__(self):
         super().__init__("GoogleSearchAgent")
-        self.log_result("Agent GoogleSearch started with success !")
 
     def description(self) -> str:
         text = """ Cet agent exploite les requêtes avancées Google pour 
