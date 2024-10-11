@@ -50,12 +50,8 @@ All the information you retrieve must be **publicly accessible** and comply with
 ```  
 ### Final steps:  
 - When the maximum number of requests is reached, or enough information is available, **set `is_final` to true** and fill **`final_result`** with one or more explicit and well-structured paragraphs.  
-- In case of a basic or out-of-context question, respond directly by setting `is_final` to 'true' and putting the answer in `final_result`.
+- In case of a basic or out-of-context question, respond directly by setting `is_final` to 'true' and putting the answer in `final_result`. Be chatty and format your final answer.
 
-# Additional Notes:  
-Continue to suggest **next_steps** with the available agents as long as you don't have enough information.
-
-Do not provide any additional explanation unless explicitly requested. Your goal is to present the retrieved data in the strictly requested format while adhering to privacy laws.
 
 ### Ongoing communication protocol:  
 {{ user_query }}  

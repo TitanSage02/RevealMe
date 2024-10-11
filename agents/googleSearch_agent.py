@@ -11,7 +11,7 @@ class GoogleSearchAgent(Agent):
         try : 
             self.client = serpapi.Client(api_key=os.getenv("SERP_API_KEY") or api_key)
         except Exception as e:
-            raise ValueError("Clé API SerpAPI manquante. Veuillez fournir une clé ou définir 'SERP_API_KEY' dans les variables d'environnement.")
+            raise ValueError("")
         
         if name:
             super().__init__(name)
@@ -19,17 +19,16 @@ class GoogleSearchAgent(Agent):
             super().__init__("GoogleSearchAgent")
     
     def description(self):
-        return "Effectue des recherches Google avancées via SerpAPI."
+        return "Perform advanced Google searches via SerpAPI."
 
     def run(self, query):
         if not query:
-            return {"error": "Aucune requête de recherche n'a été fournie."}
+            return {"error": "No search query was provided."}
 
         try:
             search_params = {"q": query }
             
             results = self.client.search(search_params)["organic_results"]
-            # results # Retourne une liste
             data = []
             for result in results:
                 tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["snippet"], result["source"])

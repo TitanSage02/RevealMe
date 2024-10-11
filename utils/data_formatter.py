@@ -5,17 +5,18 @@ from functools import wraps
 
 def emit_agent(event_type, message):
     """
-    Simuler l'émission de logs ou de notifications.
+    Simulate the transmission of logs or notifications.
     """
     print(f"[{event_type.upper()}]: {message}")
 
 def retry_wrapper(func):
     """
-    Wrapper pour ajouter une logique de tentative (retry) en cas d'échec.
+    Wrapper to add retry logic in case of failure.
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-        max_tries = 2  # Nombre maximum de tentatives
+        max_tries = 2 # Maximum number of attempts
         tries = 0
         
         while tries < max_tries:
@@ -24,7 +25,7 @@ def retry_wrapper(func):
                 return result
             emit_agent("warning", "Invalid response from the model, I'm trying again...")
             tries += 1
-            time.sleep(3)  # Attendre 3 secondes avant la prochaine tentative
+            time.sleep(3)  # Wait 3 seconds before next attempt
         
         emit_agent("error", "Maximum attempts reached. The model keeps failing.")
         answer = {}
@@ -35,26 +36,25 @@ def retry_wrapper(func):
 
 def convert_json_format(text : str) -> dict:
     """
-    Valide et nettoie les réponses JSON provenant des agents ou du super agent.
+    Validates and cleans up JSON responses from agents or the super agent.
     """
-
     if isinstance(text, dict):
         return text
 
-    response = text.strip()  # Convertir en chaîne et éliminer les espaces
+    response = text.strip()
 
-    # Tentative 1: Directe
+    # Attempt 1: Direct
     try:
         response_json = json.loads(response)
         # print("Valid JSON (Direct):", type(response_json))
-        # args = (response_json,) + args[1:]  # Remplacer la réponse par la version JSON
+        # args = (response_json,) + args[1:] 
         # return func(*args, **kwargs)
         return response_json
 
     except json.JSONDecodeError:
         pass
 
-    # Tentative 2: JSON entre backticks
+    # Attempt 2: JSON between backticks
     try:
         response_json = json.loads(response.split("```")[1].strip())
         # print("Valid JSON (Backticks):", type(response_json))
@@ -65,7 +65,7 @@ def convert_json_format(text : str) -> dict:
     except (IndexError, json.JSONDecodeError):
         pass
 
-    # Tentative 3: Extraction JSON entre accolades
+    # Attempt 3: JSON extraction in braces
     try:
         start_index = response.find('{')
         end_index = response.rfind('}')
@@ -80,7 +80,7 @@ def convert_json_format(text : str) -> dict:
     except json.JSONDecodeError:
         pass
 
-    # Tentative 4: Validation ligne par ligne
+    # Attempt 4: Line-by-line validation
     for line in response.splitlines():
         try:
             response_json = json.loads(line)
@@ -90,7 +90,7 @@ def convert_json_format(text : str) -> dict:
             return response_json
 
         except json.JSONDecodeError:
-            continue  # Passer à la ligne suivante
+            continue 
 
     return False
 
@@ -98,8 +98,9 @@ def convert_json_format(text : str) -> dict:
 @retry_wrapper
 def validate_super_agent_format_response(response) -> dict:
     """
-    Valide la réponse JSON produite par le super agent pour s'assurer qu'elle suit le format attendu.
+    Validates the JSON response produced by the super agent to ensure that it follows the expected format.
     """
+
     required_keys = [ "agents_run", "next_steps", "is_final", "final_result"]
 
     response = convert_json_format(response)
@@ -127,11 +128,6 @@ def validate_super_agent_format_response(response) -> dict:
 
 def convert_json_to_string(data, indent=None, sort_keys=False):
     """
-    Convertit un objet Python en chaîne JSON.
-
-    :param data: L'objet Python à convertir (dictionnaire ou liste).
-    :param indent: Indentation pour le formatage (par défaut: None).
-    :param sort_keys: Si True, trie les clés du dictionnaire (par défaut: False).
-    :return: La chaîne JSON correspondante.
+    Converts a Python object into a JSON string.
     """
     return json.dumps(data, indent=indent, sort_keys=sort_keys)

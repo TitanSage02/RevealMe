@@ -21,12 +21,11 @@ from agents.whois_agent import WhoisAgent
 from agents.twitter_agent import TwitterAgent
 from agents.instagram_agent import InstagramAgent
 
-from jinja2 import Environment, FileSystemLoader
-env = Environment(loader=FileSystemLoader('templates'))
-
-
 from llm.gpt_o1 import GPTo1
 from llm.gemini import GeminiAI
+
+from jinja2 import Environment, FileSystemLoader
+env = Environment(loader=FileSystemLoader('templates'))
 
 
 class SuperAgent:
