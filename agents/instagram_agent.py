@@ -9,8 +9,9 @@ class InstagramAgent(Agent):
         text = """ Cet Agent récupère les publications publiques, 
                 les followers, et les hashtags utilisés sur Instagram.
                 """
+        return text.strip()
 
-    def run(self, params: dict):
+    def run(self, params):
         """
         Recherche sur Instagram par nom d'utilisateur.
         
@@ -21,7 +22,10 @@ class InstagramAgent(Agent):
         Returns:
             dict: Informations sur le profil Instagram.
         """
-        username = params.get("username", "")
+
+        super().run()
+
+        username = params
         # Simuler une recherche Instagram
         results = {
             "username": username,

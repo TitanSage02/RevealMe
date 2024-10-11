@@ -8,19 +8,23 @@ class LinkedinAgent(Agent):
     def description(self) -> str:
         text = """ Cet agent collecte les informations professionnelles 
                 (expériences, compétences, connexions) sur LinkedIn. """
+        return text.strip()
 
-    def run(self, params: dict):
+    def run(self, params):
         """
         Recherche sur LinkedIn pour des informations de profil.
         
         Args:
             params (dict): Paramètres nécessaires pour exécuter l'agent.
-                           Par exemple, {'profile_name': 'John Doe'}
+                           Par exemple, {'profile_name': 'Abalo Hyppolyte'}
                            
         Returns:
             dict: Informations de profil LinkedIn.
         """
-        profile_name = params.get("profile_name", "")
+
+        super().run()
+
+        profile_name = params
         # Simuler une recherche LinkedIn
         results = {
             "profile_name": profile_name,

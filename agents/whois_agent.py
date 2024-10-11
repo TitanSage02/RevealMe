@@ -9,6 +9,7 @@ class WhoisAgent(Agent):
         text = """ Cet agent interroge les enregistrements de domaines 
                 pour obtenir les informations d’enregistrement 
                 (propriétaire, dates, serveurs). """
+        return text.strip()
 
     def run(self, params: dict):
         """
@@ -21,7 +22,10 @@ class WhoisAgent(Agent):
         Returns:
             dict: Informations Whois sur le domaine.
         """
-        domain = params.get("domain", "")
+
+        super().run()
+
+        domain = params
         # Simuler une recherche Whois
         results = {
             "domain": domain,

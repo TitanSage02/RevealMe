@@ -8,8 +8,9 @@ class BreachData(Agent):
     def description(self) -> str:
         text = """ Cet agent vérifie si une adresse e-mail ou un 
                 identifiant a  été exposé dans des fuites de données. """
+        return text.strip()
 
-    def run(self, params: dict):
+    def run(self, params):
         """
         Recherche de données compromises dans des bases de données de fuites.
         
@@ -20,7 +21,9 @@ class BreachData(Agent):
         Returns:
             dict: Détails des données compromises.
         """
-        email = params.get("email", "")
+        super().run()
+        
+        email = params
         # Simuler une recherche de données compromises
         results = {
             "email": email,

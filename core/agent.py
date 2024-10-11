@@ -4,11 +4,12 @@ import concurrent.futures
 import sys
 import os
  
+import time
+
 # Ajoute le répertoire racine du projet à sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
-from utils.data_formatter import convert_json_format, validate_super_agent_format_response
+from utils.data_formatter import convert_json_format, convert_json_to_string, validate_super_agent_format_response
 
 from agents.linkedin_agent import LinkedinAgent
 from agents.facebook_agent import FacebookAgent
@@ -22,8 +23,9 @@ from agents.instagram_agent import InstagramAgent
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
-root_template = env.get_template('root.jinja2')
 
+
+from llm.gpt_o1 import GPTo1
 from llm.gemini import GeminiAI
 
 
@@ -33,8 +35,9 @@ class SuperAgent:
         print("SuperAgent init !")
 
         self.agent_name = "SuperOSINT"
-        self.brain = GeminiAI()
-        
+        self.brain = GPTo1()
+        #self.brain = GeminiAI()
+        self.compteur = 0
         # self.task_manager = TaskManager()
         
         self.agent_mapping = {
@@ -46,60 +49,65 @@ class SuperAgent:
             "linkedin_agent": LinkedinAgent(),
             "facebook_agent": FacebookAgent(),
             "instagram_agent": InstagramAgent(),
-            "googleSearch_agent": GoogleSearch(),
+            "googlesearch_agent": GoogleSearch(),
         }
 
         self.tools = {tool: self.agent_mapping[tool].description() for tool in self.agent_mapping}
+
+    # def formated_json(self, text : str) -> dict:
+    #     data = {
+    #         'reponse_query': text
+    #     }
+    #     format_template = env.get_template('format_to_json.jinja2')
+    #     context = format_template.render(data)
+        
+    #     response = self.brain.inference(context) # Format JSON
+        
+    #     response = validate_super_agent_format_response(response)
+        
+    #     return response
 
     def query(self, message: str) -> dict:
         """
         Envoie une requête au LLM pour formuler une stratégie de réponse.
         """
         
+        time.sleep(5)
+
         data = {
             'agent_name': self.agent_name,
             'user_query': message,
-            'tools': self.tools
+            'tools': self.tools,
+            'compteur' : self.compteur,
         }
         
+        root_template = env.get_template('root.jinja2')
+        
         context = root_template.render(data)
-        response = self.brain.inference(context)
 
-        print(f"\n\n\n\n {response} \n\n\n")
+        response = self.brain.inference(context) # Format JSON
+        
+        # print(f"\n\n\n\n {response} \n\n\n")
 
         return response
 
-    def run_agents_in_parallel(self, agents_to_run):
-        """
-        Exécute les agents spécifiés avec leurs paramètres respectifs en parallèle et collecte leurs résultats.
-        """
-        results = {}
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_to_agent = {executor.submit(self.execute_agent, agent["agent_name"], agent["parameters"]): agent for agent in agents_to_run}
 
-            # format : agents_to_run = [{"agent_name" : str },{"parameters" : str}, {"status":}, {"response_data":}]
-
-            for future in concurrent.futures.as_completed(future_to_agent):
-                agent = future_to_agent[future]
-                try:
-                    result = future.result()
-                    results[agent["agent_name"]] = result
-                    # agent["status"] = "completed"
-                    # agent["response_data"] = result
-                except Exception as e:
-                    results[agent["agent_name"]] = {"error": str(e)}
-                    # agent["status"] = "failed"
-        
-        return results
-
-    def execute_agent(self, agent_name, params=None):
+    def execute_agent(self, agent_name, params = []):
         """
         Exécute l'agent spécifié avec ses paramètres et retourne son résultat.
         """
+        self.compteur += 1
         agent_module = self.agent_mapping[str(agent_name).lower()]
-
+        
+        print("\n\nAgent : ", agent_module.description())
+        
         # if agent_module:
-        return agent_module.run(params)  # Chaque agent doit avoir une méthode `run(params)`
+        ans = agent_module.run(params)  # Chaque agent doit avoir une méthode `run(params)`
+        
+        print("Agent reponse : ", ans)
+        
+        return ans
+        
         # else:
         #    raise ValueError(f"Unknown agent: {agent_name}")
 
@@ -124,6 +132,52 @@ class SuperAgent:
         super_agent_response["next_steps"] = {}
 
         return super_agent_response
+
+    # def run_agents_in_parallel(self, agents_to_run):
+    #     """
+    #     Exécute les agents spécifiés en parallèle avec leurs paramètres.
+    #     Retourne un dictionnaire des résultats de chaque agent.
+    #     """
+    #     agent_results = {}
+
+    #     with concurrent.futures.ThreadPoolExecutor() as executor:
+    #         # Créer un dictionnaire de futures
+    #         future_to_agent = {
+    #             executor.submit(self.execute_agent, agent["agent_name"], agent["parameters"]): agent["agent_name"]
+    #             for agent in agents_to_run
+    #         }
+
+    #         for future in concurrent.futures.as_completed(future_to_agent):
+    #             agent_name = future_to_agent[future]
+    #             try:
+    #                 result = future.result()
+    #                 agent_results[agent_name] = result
+    #             except Exception as e:
+    #                 agent_results[agent_name] = {"error": str(e)}
+
+    #     return agent_results
+
+
+    def run_agents_in_parallel(self, agents_to_run):
+        """
+        Exécute les agents spécifiés l'un après l'autre avec leurs paramètres.
+        Retourne un dictionnaire des résultats de chaque agent.
+        """
+        # print("agents_to_run : ", agents_to_run)
+        # exit(0)
+        agent_results = {}
+
+        for agent in agents_to_run:
+            agent_name = agent["agent_name"]
+            parameters = agent["parameters"]
+            try:
+                result = self.execute_agent(agent_name, parameters)
+                agent_results[agent_name] = result
+            except Exception as e:
+                agent_results[agent_name] = {"error": str(e)}
+
+        return agent_results
+
 
     def handle_query(self, query):
         """
@@ -150,44 +204,51 @@ class SuperAgent:
         while not super_agent_response["is_final"]:
             
             # Valider le format réponse du SuperAgent
-            # while not validate_super_agent_response(super_agent_response):
-            #     print("Invalid response structure. Retrying...")
-            #     super_agent_response = self.query(super_agent_response)
+            while not validate_super_agent_format_response(super_agent_response):
+                # print("Invalid response structure. Retrying...")
+                super_agent_response = self.query(super_agent_response)
 
             # Extraire les agents à exécuter avec leurs paramètres
             next_agents = super_agent_response.get("next_steps", [])
             agents_to_run = []
             for agent in next_agents:
                 agents_to_run.append({
-                    "agent_name": agent.get("agent_to_run", ""),    # Le nom de l'agent
-                    "parameters": agent.get("parameters", {}),      # Les paramètres à envoyer à l'agent
-                    "status": "pending",                            # Initialise le statut à 'pending'
-                    "response_data": None                           # Initialise response_data à None
+                    "agent_name": agent.get("agent_to_run", ""),     # Le nom de l'agent
+                    "parameters": agent.get("parameters", {}),       # Les paramètres à envoyer à l'agent
+                    # "status": "pending",                            # Initialise le statut à 'pending'
+                    # "response_data": None                           # Initialise response_data à None
                 })
 
-            if not agents_to_run:
-                print("No agents pending for execution. Awaiting next steps from LLM...")
-                super_agent_response["next_steps"] = {}
-                break
+            # if not agents_to_run:
+            #     print("No agents pending for execution. Awaiting next steps from LLM...")
+            #     super_agent_response["next_steps"] = {}
+            #     break
 
             # Étape 4: Exécuter les agents en parallèle avec leurs paramètres respectifs
             agent_results = self.run_agents_in_parallel(agents_to_run)
 
+            # print(agent_results)
+
             # Étape 5: Mettre à jour `agents_run` avec les résultats
             super_agent_response = self.compile_responses(super_agent_response, agent_results)
 
-            # Valider la réponse mise à jour
-            if not validate_super_agent_format_response(super_agent_response):
-                print("Invalid response format after agent execution.")
-                raise ValueError("Failed to validate SuperAgent response after execution.")
+            # # Valider la réponse mise à jour
+            # if not validate_super_agent_format_response(super_agent_response):
+            #     print("Invalid response format after agent execution.")
+            #     raise ValueError("Failed to validate SuperAgent response after execution.")
+
+            # Etape 6 :  Nouvelle soumission au llm
+            print("\n\n\n ALERTE NOUVELLE REQUETE !")
+            super_agent_response = self.query(convert_json_to_string(super_agent_response))
+            # return 0
 
         print("SuperAgent finale response !")
-        return super_agent_response
+        return super_agent_response["final_result"]
 
 # Exemple d'utilisation
 if __name__ == "__main__":
     print("Program init !")
     super_agent = SuperAgent()
-    query = "Find all publicly available information on John Doe"
+    query = "Dis moi ce que tu connais de  Mr Abalo Hyppolyte !"
     response = super_agent.handle_query(query)
     print(json.dumps(response, indent=4))

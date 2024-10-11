@@ -21,7 +21,7 @@ class GeminiAI(BaseLLM):
     def create_model(self):
         """Create and return a GenerativeModel instance."""
         generation_config = {
-            "temperature": 0.7,
+            "temperature": 1,
             "top_p": 0.95,
             "top_k": 64,
             "response_mime_type": "text/plain",
@@ -35,15 +35,21 @@ class GeminiAI(BaseLLM):
         """Start a new chat session and return the session object."""
         return self.model.start_chat(history=[])
     
-    @retry_wrapper
-    def inference(self, message : str):
-        """Send a message to the chat session and return the response."""
+    #@retry_wrapper
+    def inference(self, message : str) -> str:
+        """Send a message to the chat session and return the response in JSON format."""
         chat_session = self.start_chat()
         response = chat_session.send_message(message).text
+
+        # print("\n\n\n LLM Input : ", message)
+        
+        print("\n\n\n LLM Response before : ", response)
         
         response = validate_super_agent_format_response(response)
+        
+        # print("\n\n\n LLM Response after : ", response)
 
-        return response
+        return response # Retourne un string simplement
 
 # Usage
 if __name__ == "__main__":

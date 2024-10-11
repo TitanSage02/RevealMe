@@ -8,8 +8,9 @@ class GithubAgent(Agent):
     def description(self) -> str:
         text = """ Cet agent récupère les projets et contributions 
                 publiques sur GitHub pour évaluer les compétences techniques. """
+        return text.strip()
 
-    def run(self, params: dict):
+    def run(self, params):
         """
         Recherche des profils GitHub en fonction du nom d'utilisateur ou du nom complet.
         
@@ -20,7 +21,10 @@ class GithubAgent(Agent):
         Returns:
             dict: Informations sur le profil GitHub.
         """
-        username = params.get("username", "")
+
+        super().run()
+
+        username = params
         # Simuler une recherche GitHub
         results = {
             "username": username,

@@ -7,9 +7,10 @@ class TwitterAgent(Agent):
 
     def description(self) -> str:
         text = """ Cet agent analyse les tweets, les abonnés, et 
-                les mentions pour cartographier l’activité sur Twitter."""
+                les mentions pour cartographier l’activité sur Twitter. """
+        return text.strip()
 
-    def run(self, params: dict):
+    def run(self, params):
         """
         Recherche sur Twitter par nom d'utilisateur.
         
@@ -20,7 +21,10 @@ class TwitterAgent(Agent):
         Returns:
             dict: Informations sur le profil Twitter.
         """
-        username = params.get("username", "")
+
+        super().run()
+
+        username = params
         # Simuler une recherche Twitter
         results = {
             "username": username,

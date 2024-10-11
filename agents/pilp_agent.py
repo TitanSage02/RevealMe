@@ -6,21 +6,25 @@ class PilpAgent(Agent):
         super().__init__("PilpAgent")
 
     def description(self) -> str:
-        text = """ Regroupe les profils sociaux d’une personne à partir 
+        text = """ Cet agent regroupe les profils sociaux d’une personne à partir 
                 de noms, e-mails ou numéros de téléphone. """
+        return text.strip()
 
-    def run(self, params: dict):
+    def run(self, params):
         """
         Effectue une recherche sur Pilp avec les paramètres spécifiés.
         
         Args:
             params (dict): Paramètres nécessaires pour exécuter l'agent.
-                           Par exemple, {'query': 'John Doe'}
+                           Par exemple, {'query': 'Abalo Hyppolyte'}
                            
         Returns:
             dict: Résultats de la recherche Pilp.
         """
-        query = params.get("query", "")
+
+        super().run()
+
+        query = params
         # Simuler une recherche sur Pilp
         results = {
             "query": query,

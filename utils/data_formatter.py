@@ -15,7 +15,7 @@ def retry_wrapper(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        max_tries = 5  # Nombre maximum de tentatives
+        max_tries = 2  # Nombre maximum de tentatives
         tries = 0
         
         while tries < max_tries:
@@ -24,14 +24,14 @@ def retry_wrapper(func):
                 return result
             emit_agent("warning", "Invalid response from the model, I'm trying again...")
             tries += 1
-            time.sleep(2)  # Attendre 2 secondes avant la prochaine tentative
+            time.sleep(3)  # Attendre 3 secondes avant la prochaine tentative
         
         emit_agent("error", "Maximum attempts reached. The model keeps failing.")
         sys.exit(1)  # Arrêter le programme après 5 échecs consécutifs
 
     return wrapper
 
-def convert_json_format(text : str):
+def convert_json_format(text : str) -> dict:
     """
     Valide et nettoie les réponses JSON provenant des agents ou du super agent.
     """
@@ -55,7 +55,7 @@ def convert_json_format(text : str):
     # Tentative 2: JSON entre backticks
     try:
         response_json = json.loads(response.split("```")[1].strip())
-        print("Valid JSON (Backticks):", type(response_json))
+        # print("Valid JSON (Backticks):", type(response_json))
         # args = (response_json,) + args[1:]  
         # return func(*args, **kwargs)
         return response_json
@@ -70,7 +70,7 @@ def convert_json_format(text : str):
         if start_index != -1 and end_index != -1:
             json_str = response[start_index:end_index + 1]
             response_json = json.loads(json_str)
-            print("Valid JSON (Extracted Braces):", type(response_json))
+            # print("Valid JSON (Extracted Braces):", type(response_json))
             # args = (response_json,) + args[1:]  
             # return func(*args, **kwargs)
             return response_json
@@ -82,7 +82,7 @@ def convert_json_format(text : str):
     for line in response.splitlines():
         try:
             response_json = json.loads(line)
-            print("Valid JSON (Line-by-line):", type(response_json))
+            # print("Valid JSON (Line-by-line):", type(response_json))
             # args = (response_json,) + args[1:]  
             # return func(*args, **kwargs)
             return response_json
@@ -98,7 +98,7 @@ def validate_super_agent_format_response(response) -> dict:
     """
     Valide la réponse JSON produite par le super agent pour s'assurer qu'elle suit le format attendu.
     """
-    required_keys = [ "query", "agents_run", "next_steps", "is_final", "final_result"]
+    required_keys = [ "agents_run", "next_steps", "is_final", "final_result"]
 
     response = convert_json_format(response)
 
@@ -119,5 +119,17 @@ def validate_super_agent_format_response(response) -> dict:
             emit_agent("error", f"Invalid agent format: {agent}")
             return False
 
-    print("SuperAgent response validated successfully !")
+    # print("SuperAgent response validated successfully !")
     return response
+
+
+def convert_json_to_string(data, indent=None, sort_keys=False):
+    """
+    Convertit un objet Python en chaîne JSON.
+
+    :param data: L'objet Python à convertir (dictionnaire ou liste).
+    :param indent: Indentation pour le formatage (par défaut: None).
+    :param sort_keys: Si True, trie les clés du dictionnaire (par défaut: False).
+    :return: La chaîne JSON correspondante.
+    """
+    return json.dumps(data, indent=indent, sort_keys=sort_keys)
