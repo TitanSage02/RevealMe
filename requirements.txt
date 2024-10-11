@@ -9,4 +9,4 @@ jinja2
 python-dotenv
 
 # For Agents research
-serpapi
+serpapi==0.1.5
