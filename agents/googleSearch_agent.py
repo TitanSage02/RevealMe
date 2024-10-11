@@ -13,7 +13,7 @@ class GoogleSearchAgent(Agent):
         except Exception as e:
             raise ValueError("")
         
-        if name:
+        if name: 
             super().__init__(name)
         else :
             super().__init__("GoogleSearchAgent")
@@ -26,7 +26,9 @@ class GoogleSearchAgent(Agent):
             return {"error": "No search query was provided."}
 
         try:
-            search_params = {"q": query , "location" : "Benin"}
+            search_params = {"q": query , 
+                             "engine": "google",
+                             "google_domain": "google.com"}
             
             results = self.client.search(search_params)["organic_results"]
             data = []

@@ -18,7 +18,9 @@ class LinkedinAgent(GoogleSearchAgent):
         query = "linkedin.com :" + query
 
         try:
-            search_params = {"q": query, "location" : "Benin"}
+            search_params = {"q": query , 
+                             "engine": "google",
+                             "google_domain": "google.com"}
             
             results = self.client.search(search_params)["organic_results"]
             # results # Retourne une liste

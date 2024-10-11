@@ -2,7 +2,7 @@ import streamlit as st
 from core import SuperAgent 
 
 # Page configuration
-st.set_page_config(page_title="DataMirror", page_icon="🔍")  
+st.set_page_config(page_title="RevealMe", page_icon="🔍")  
 
 # SuperAgent initialization
 super_agent = SuperAgent()
@@ -16,11 +16,11 @@ with st.sidebar:
         st.session_state.chat_history = None
 
     st.image('assets/img/logo.jpg', width=200)
-    st.caption("🔍 **Welcome to DataMirror, your digital mirror!**\n\n DataMirror helps you discover, in just a few clicks, the information available about you online. Using our AI-powered solution, we gather only publicly accessible data while strictly adhering to privacy and confidentiality laws. Take control of your digital footprint and see what others can find out about you!")
+    st.caption("🔍 **Welcome to RevealMe, your digital mirror!**\n\n RevealMe helps you discover, in just a few clicks, the information available about you online. Using our AI-powered solution, we gather only publicly accessible data while strictly adhering to privacy and confidentiality laws. Take control of your digital footprint and see what others can find out about you!")
 
 # Initializes session state to keep message history
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "Hi! I’m DataMirror, your personal digital assistant. I’m here to help you uncover publicly accessible information about you on the internet. Together, we’ll explore your digital footprint while respecting privacy laws. \n\nHow can I assist you today? To get started, simply enter your name or ask me a question!"}]
+    st.session_state["messages"] = [{"role": "assistant", "content": "Hi! I’m RevealMe, your personal digital assistant. I’m here to help you uncover publicly accessible information about you on the internet. Together, we’ll explore your digital footprint while respecting privacy laws. \n\nHow can I assist you today? To get started, simply enter your name or ask me a question!"}]
 
 # Display previous messages
 for msg in st.session_state.messages:
