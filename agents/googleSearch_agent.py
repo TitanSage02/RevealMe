@@ -26,7 +26,7 @@ class GoogleSearchAgent(Agent):
             return {"error": "No search query was provided."}
 
         try:
-            search_params = {"q": query }
+            search_params = {"q": query , "location" : "Benin"}
             
             results = self.client.search(search_params)["organic_results"]
             data = []
