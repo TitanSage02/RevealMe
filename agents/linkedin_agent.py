@@ -26,7 +26,7 @@ class LinkedinAgent(GoogleSearchAgent):
             # results # Retourne une liste
             data = []
             for result in results:
-                tmp = "Title : \"{}\", Source_name : \"{}\"".format(result["title"], result["snippet"])
+                tmp = "Title : \"{}\", Data: \"{}\"".format(result["title"], result["snippet"])
                 data.append(tmp)
                 
                 print(tmp, end="\n\n")
