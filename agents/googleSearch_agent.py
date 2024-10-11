@@ -1,41 +1,40 @@
-from .base_agent import Agent
+import os
+from serpapi import GoogleSearch
+from base_agent import Agent
 
-
-class GoogleSearch(Agent):
-    def __init__(self):
+class GoogleSearchAgent(Agent):
+    def __init__(self, api_key=None):
         super().__init__("GoogleSearchAgent")
+        self.api_key = api_key or os.getenv("SERPAPI_KEY")
+        if not self.api_key:
+            raise ValueError("Clé API SerpAPI manquante. Veuillez fournir une clé ou définir 'SERPAPI_KEY' dans les variables d'environnement.")
 
-    def description(self) -> str:
-        text = """ Cet agent exploite les requêtes avancées Google pour 
-                identifier des informations cachées ou mal indexées 
-                (Google Dorking). """
-        return text.strip()
+    def description(self):
+        return "Effectue des recherches Google avancées via SerpAPI."
 
     def run(self, params):
-        """
-        Recherche Google pour des informations publiques sur un nom ou une requête.
-        
-        Args:
-            params (dict): Paramètres nécessaires pour exécuter l'agent.
-                           Par exemple, {'query': 'Abalo Hyppolyte'}
-                           
-        Returns:
-            dict: Résultats de la recherche Google.
-        """
+        query = params.get("query", "")
+        if not query:
+            return {"error": "Aucune requête de recherche n'a été fournie."}
 
-        super().run()
+        try:
+            search_params = {"q": query, "api_key": self.api_key, "num": 10}
+            search = GoogleSearch(search_params)
+            results = search.get_dict()
 
-        query = params
-        # Simuler une recherche Google
-        results = {
-            "query": query,
-            "top_results": [
-                {"title": "Abalo Hyppolyte - LinkedIn Profile", "link": "https://www.linkedin.com/in/johndoe"},
-                {"title": "Abalo Hyppolyte's Blog", "link": "https://johndoe.com"},
-                {"title" : "Abalo Hyppolyte's Facebook" , "content" : "recent_posts:[Excited to be starting a new job at Company SpacheTech!,Happy holidays everyone!]"}
-            ]
-        }
-        return results
+            google_results = []
+            if "organic_results" in results:
+                for result in results["organic_results"]:
+                    google_results.append({
+                        "title": result.get("title"),
+                        "link": result.get("link"),
+                        "snippet": result.get("snippet")
+                    })
+
+            return {"query": query, "results": google_results}
+
+        except Exception as e:
+            return {"error": f"Erreur lors de la recherche Google avec SerpAPI : {str(e)}"}
 
 if __name__ == '__main__':
     pass

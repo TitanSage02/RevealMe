@@ -7,3 +7,6 @@ jinja2
 
 # Others
 python-dotenv
+
+# For Agents research
+serpapi
