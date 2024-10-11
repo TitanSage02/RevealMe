@@ -82,7 +82,7 @@ RevealMe/
 
 4. **Run the application**:
    ```bash
-   python streamlit app.py
+   streamlit run app.py
    ```
 
 ---
