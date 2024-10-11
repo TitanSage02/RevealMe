@@ -1,11 +1,10 @@
-from .base_agent import Agent
-from .googleSearch_agent import GoogleSearchAgent
-import os
 
+import os
+from googleSearch_agent import GoogleSearchAgent
 
 class LinkedinAgent(GoogleSearchAgent):
-    def __init__(self):
-        super().__init__("LinkedinAgent")
+    def __init__(self, api_key = None):
+        super().__init__("LinkedinAgent", api_key= api_key)
 
     
     def description(self) -> str:
@@ -22,21 +21,17 @@ class LinkedinAgent(GoogleSearchAgent):
         try:
             search_params = {"q": query }
             
-            results = self.client.search(search_params)["inline_images"]
-            print(results) # Retourne une liste
-            # data = []
-            # for result in results:
-            #     tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["source_name"], result["source"])
-            #     data.append(tmp)
+            results = self.client.search(search_params)["organic_results"]
+            # results # Retourne une liste
+            data = []
+            for result in results:
+                tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["snippet"], result["source"])
+                data.append(tmp)
                 
-            #     # print(tmp, end="\n\n")
+                print(tmp, end="\n\n")
                 
-            #     if len(data) >= 5:
-            #         break
-            
-
-
-
+                if len(data) >= 5:
+                    break
             
             # return data
         
@@ -46,5 +41,5 @@ class LinkedinAgent(GoogleSearchAgent):
 if __name__ == '__main__':
     import json
     test = LinkedinAgent(api_key="d615b5a79c503a1cd8a52d9c319e334828fcabd85c5fc67c7814a94bd3069445")
-    answer = test.run("Rosselin Dada")
+    answer = test.run("Kevin degila")
     print(answer)

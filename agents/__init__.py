@@ -1,4 +1,4 @@
-from .googleSearch_agent import GoogleSearch
+from .googleSearch_agent import GoogleSearchAgent
 from .instagram_agent import InstagramAgent
 from .facebook_agent import FacebookAgent
 from .linkedin_agent import LinkedinAgent

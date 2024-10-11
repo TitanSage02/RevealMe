@@ -26,11 +26,11 @@ class GoogleSearchAgent(Agent):
         try:
             search_params = {"q": query }
             
-            results = self.client.search(search_params)["inline_images"]
+            results = self.client.search(search_params)["organic_results"]
             # results # Retourne une liste
             data = []
             for result in results:
-                tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["source_name"], result["source"])
+                tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["snippet"], result["source"])
                 data.append(tmp)
                 
                 # print(tmp, end="\n\n")
