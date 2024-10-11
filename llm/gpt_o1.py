@@ -28,7 +28,7 @@ class GPTo1():
         """Sends a message to the API and returns the response."""
         completion = self.api.chat.completions.create(
             # model="o1-mini-2024-09-12",   # ??? Don't response 
-            model = "gpt-4o",
+            model = "gpt-4o-2024-08-06",
             messages=[
                 {"role": "user", "content": message}
             ],

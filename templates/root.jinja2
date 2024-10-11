@@ -48,10 +48,12 @@ All the information you retrieve must be **publicly accessible** and comply with
   "final_result": null  
 }  
 ```  
+### Ongoing communication protocol:  
+<START>
+{{ user_query }} 
+<END>
+
 ### Final steps:  
 - When the maximum number of requests is reached, or enough information is available, **set `is_final` to true** and fill **`final_result`** with one or more explicit and well-structured paragraphs.  
-- In case of a basic or out-of-context question, respond directly by setting `is_final` to 'true' and putting the answer in `final_result`. Formulate a few paragraphs with the information you have at hand, and don't hesitate to bold or style the information.
-
-
-### Ongoing communication protocol:  
-{{ user_query }}  
+- In case of a basic or out-of-context question, respond directly by setting `is_final` to 'true' and putting the answer in `final_result`.
+- Formulate a few paragraphs with the information you have at hand.

@@ -43,5 +43,9 @@ if prompt := st.chat_input("Enter your query here:"):
         print(f"An error has occurred. Error : {error}")
         st.session_state.messages.append({"role" : "assistant", "content" : "Sorry, I can't answer that right now. Please come back later."})
 
+
     with st.spinner('Displaying results...'):
-        st.chat_message("assistant").write(msg)
+        if isinstance(msg, dict):
+            st.chat_message("user").write_stream("Sorry, I can't answer that right now. Please come back later.")
+        else :
+            st.chat_message("user").write(msg)

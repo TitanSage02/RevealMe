@@ -36,12 +36,8 @@ class GoogleSearchAgent(Agent):
                 
                 print(tmp, end="\n\n")
                 
-                if len(data) >= 10:
+                if len(data) >= 5:
                     break
-            
-
-
-
             
             return data
         
