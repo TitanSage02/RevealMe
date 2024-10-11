@@ -33,7 +33,7 @@ class SuperAgent:
 
         print("SuperAgent init !")
 
-        self.agent_name = "SuperOSINT"
+        self.agent_name = "RevealMe"
         self.brain = GPTo1()
         #self.brain = GeminiAI()
         self.compteur = 0

@@ -8,7 +8,8 @@ class LinkedinAgent(GoogleSearchAgent):
 
     
     def description(self) -> str:
-        text = """"""
+        text = """This agent collects professional information 
+                (experience, skills, connections) on LinkedIn."""
         return text.strip()
 
     def run(self, query):
@@ -19,14 +20,13 @@ class LinkedinAgent(GoogleSearchAgent):
 
         try:
             search_params = {"q": query , 
-                             "engine": "google",
-                             "google_domain": "google.com"}
+                             "engine": "google"}
             
             results = self.client.search(search_params)["organic_results"]
             # results # Retourne une liste
             data = []
             for result in results:
-                tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["snippet"], result["source"])
+                tmp = "Title : \"{}\", Source_name : \"{}\"".format(result["title"], result["snippet"])
                 data.append(tmp)
                 
                 print(tmp, end="\n\n")

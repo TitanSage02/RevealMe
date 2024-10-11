@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 from core import SuperAgent 
 
 # Page configuration
@@ -26,6 +27,11 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
+def text_to_iterable(text:str):
+    for letter in text:
+        yield letter
+        time.sleep(0.01)
+
 # User input management
 if prompt := st.chat_input("Enter your query here:"):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -46,6 +52,10 @@ if prompt := st.chat_input("Enter your query here:"):
 
     with st.spinner('Displaying results...'):
         if isinstance(msg, dict):
-            st.chat_message("user").write_stream("Sorry, I can't answer that right now. Please come back later.")
+            try : 
+                st.chat_message("ai").write_stream(text_to_iterable(msg["final_result"])) 
+            except : 
+                st.chat_message("user").write_stream(text_to_iterable("Sorry, I can't answer that right now. Please come back later."))
+                
         else :
-            st.chat_message("user").write(msg)
+            st.chat_message("ai").write_stream(text_to_iterable(msg))

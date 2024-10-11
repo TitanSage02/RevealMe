@@ -27,18 +27,17 @@ class GoogleSearchAgent(Agent):
 
         try:
             search_params = {"q": query , 
-                             "engine": "google",
-                             "google_domain": "google.com"}
+                             "engine": "google"}
             
             results = self.client.search(search_params)["organic_results"]
             data = []
             for result in results:
-                tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["snippet"], result["source"])
+                tmp = "Title : \"{}\", Source_name : \"{}\"".format(result["title"], result["snippet"])
                 data.append(tmp)
                 
                 print(tmp, end="\n\n")
                 
-                if len(data) >= 5:
+                if len(data) >= 7:
                     break
             
             return data
