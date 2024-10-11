@@ -2,6 +2,7 @@
 
 RevealMe is an **OSINT** (Open Source Intelligence) tool designed to help users discover and analyze public information available about them online. By leveraging advanced AI models such as **GPTo1** and **GPTo1-preview** from OpenAI, RevealMe provides an efficient solution to examine digital footprints and manage online privacy.
 
+> **Tester l'application en ligne** : [RevealMe](https://revealme.streamlit.app/)
 ---
 
 ## 🎯 Project Objective
