@@ -10,3 +10,6 @@ python-dotenv
 
 # For Agents research
 serpapi==0.1.5
+
+# Interface
+streamlit

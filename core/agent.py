@@ -9,7 +9,7 @@ import time
 # Ajoute le répertoire racine du projet à sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.data_formatter import convert_json_format, convert_json_to_string, validate_super_agent_format_response
+from utils.data_formatter import convert_json_to_string, validate_super_agent_format_response
 
 from agents.linkedin_agent import LinkedinAgent
 from agents.facebook_agent import FacebookAgent
@@ -29,8 +29,6 @@ from llm.gpt_o1 import GPTo1
 from llm.gemini import GeminiAI
 
 
-
-
 class SuperAgent:
     def __init__(self):
 
@@ -40,7 +38,6 @@ class SuperAgent:
         #self.brain = GPTo1()
         self.brain = GeminiAI()
         self.compteur = 0
-        # self.task_manager = TaskManager()
         
         self.agent_mapping = {
             # "pilp_agent": PilpAgent(),
@@ -101,12 +98,12 @@ class SuperAgent:
         self.compteur += 1
         agent_module = self.agent_mapping[str(agent_name).lower()]
         
-        print("\n\nAgent : ", agent_module.description())
+        # print("\n\nAgent : ", agent_module.description())
         
         # if agent_module:
         ans = agent_module.run(params)  # Chaque agent doit avoir une méthode `run(params)`
         
-        print("Agent reponse : ", ans)
+        # print("Agent reponse : ", ans)
         
         return ans
         
@@ -234,18 +231,13 @@ class SuperAgent:
             # Étape 5: Mettre à jour `agents_run` avec les résultats
             super_agent_response = self.compile_responses(super_agent_response, agent_results)
 
-            # # Valider la réponse mise à jour
-            # if not validate_super_agent_format_response(super_agent_response):
-            #     print("Invalid response format after agent execution.")
-            #     raise ValueError("Failed to validate SuperAgent response after execution.")
-
             # Etape 6 :  Nouvelle soumission au llm
             print("\n\n\n ALERTE NOUVELLE REQUETE !")
             super_agent_response = self.query(convert_json_to_string(super_agent_response))
             # return 0
 
         print("SuperAgent finale response !")
-        return super_agent_response["final_result"]
+        return super_agent_response
 
 # Exemple d'utilisation
 if __name__ == "__main__":
