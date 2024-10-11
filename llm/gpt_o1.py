@@ -1,8 +1,6 @@
 import os
 from openai import OpenAI
-# from .base_llm import BaseLLM
 from dotenv import load_dotenv
-
 
 import sys
 import os
@@ -10,14 +8,13 @@ import os
 # Ajoute le répertoire racine du projet à sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
-
-from utils.data_formatter import validate_super_agent_format_response, retry_wrapper
+from utils.data_formatter import validate_super_agent_format_response, convert_json_format
 
 
 load_dotenv()
 
 base_url = "https://api.aimlapi.com/v1"
+
 
 class GPTo1():
     def __init__(self):
@@ -40,26 +37,22 @@ class GPTo1():
 
         response = completion.choices[0].message.content
         
-        print("\n\n\n LLM Input : ", message)
+        # print("\n\n\n LLM Input : ", message)
 
-        print("\n\n\n LLM Response before : ", response)
+        # print("\n\n\n LLM Response before : ", response)
 
         if not response:
-            exit(0) 
+            return ""
         
-        
-        response = validate_super_agent_format_response(response)
-        
+            
         # print("\n\n\n LLM Response after : ", response)
         
-        return response
+        return convert_json_format(response)
 
-def main():
+
+if __name__ == '__main__':
     agent = GPTo1()
     user_prompt = "Comment vas-tu ? Combien fait 1+1 ?"
     response = agent.inference(user_prompt)
 
     print("AI:", response)
-
-if __name__ == '__main__':
-    main()

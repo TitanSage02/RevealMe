@@ -6,7 +6,7 @@ import os
  
 import time
 
-# Ajoute le répertoire racine du projet à sys.path
+# Adds project root directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.data_formatter import convert_json_to_string, validate_super_agent_format_response
@@ -35,8 +35,8 @@ class SuperAgent:
         print("SuperAgent init !")
 
         self.agent_name = "SuperOSINT"
-        #self.brain = GPTo1()
-        self.brain = GeminiAI()
+        self.brain = GPTo1()
+        #self.brain = GeminiAI()
         self.compteur = 0
         
         self.agent_mapping = {
@@ -68,7 +68,7 @@ class SuperAgent:
 
     def query(self, message: str) -> dict:
         """
-        Envoie une requête au LLM pour formuler une stratégie de réponse.
+        Sends a request to LLM to formulate a response strategy.
         """
         
         time.sleep(5)
@@ -93,15 +93,14 @@ class SuperAgent:
 
     def execute_agent(self, agent_name, params = []):
         """
-        Exécute l'agent spécifié avec ses paramètres et retourne son résultat.
+        Executes the specified agent with its parameters and returns its result.
         """
+        
         self.compteur += 1
         agent_module = self.agent_mapping[str(agent_name).lower()]
-        
-        # print("\n\nAgent : ", agent_module.description())
-        
+                
         # if agent_module:
-        ans = agent_module.run(params)  # Chaque agent doit avoir une méthode `run(params)`
+        ans = agent_module.run(params)  # Each agent must have a `run(params)` method
         
         # print("Agent reponse : ", ans)
         
@@ -112,12 +111,12 @@ class SuperAgent:
 
     def compile_responses(self, super_agent_response, agent_results):
         """
-        Met à jour la réponse de `agents_run` avec les résultats des agents.
+        Updates `agents_run` response with agent results.
         """
         
         agents_run = []
 
-        # Met à jour chaque agent avec son statut et ses données
+        # Updates each agent with status and data
         for agent_name in agent_results.keys():
             agent = {}
             agent["agent_name"] = agent_name
@@ -126,7 +125,7 @@ class SuperAgent:
             agents_run.append(agent)
             
 
-        # Indiquer que la mise à jour des agents est terminée
+        # Indicate that the agent update is complete
         super_agent_response["agents_run"] = agents_run 
         super_agent_response["next_steps"] = {}
 
@@ -159,9 +158,10 @@ class SuperAgent:
 
     def run_agents_in_parallel(self, agents_to_run):
         """
-        Exécute les agents spécifiés l'un après l'autre avec leurs paramètres.
-        Retourne un dictionnaire des résultats de chaque agent.
+        Executes the specified agents one after the other with their parameters.
+        Returns a dictionary of each agent's results.
         """
+
         # print("agents_to_run : ", agents_to_run)
         # exit(0)
         agent_results = {}
@@ -180,14 +180,14 @@ class SuperAgent:
 
     def handle_query(self, query):
         """
-        Point d'entrée pour traiter une requête utilisateur.
-        Gère tout le cycle de vie de la requête, de la sélection des agents à la compilation finale.
+        Entry point for processing user queries.
+        Manages the entire query lifecycle, from agent selection to final compilation.
         """
 
-        # Étape 1: Initialiser la réponse du Super Agent (format JSON)
+        # Step 1: Initialize Super Agent response (JSON format)
         super_agent_response = self.query(query)
 
-        # Étape 2: Valider la réponse initiale
+        # Step 2: Validate the initial response
         if not super_agent_response:
             raise ValueError("Invalid initial response format from SuperAgent")
 
@@ -195,27 +195,24 @@ class SuperAgent:
         # print("Agent response", type(super_agent_response))
         # return 0
         
-        # Étape 3: Boucle de traitement jusqu'à la fin de la mission
         
         # print("type : ", type(super_agent_response))
         # return
 
         while not super_agent_response["is_final"]:
             
-            # Valider le format réponse du SuperAgent
+            # Validate SuperAgent response format
             while not validate_super_agent_format_response(super_agent_response):
                 # print("Invalid response structure. Retrying...")
                 super_agent_response = self.query(super_agent_response)
 
-            # Extraire les agents à exécuter avec leurs paramètres
+            # Extract the agents to be executed with their parameters
             next_agents = super_agent_response.get("next_steps", [])
             agents_to_run = []
             for agent in next_agents:
                 agents_to_run.append({
                     "agent_name": agent.get("agent_to_run", ""),     # Le nom de l'agent
                     "parameters": agent.get("parameters", {}),       # Les paramètres à envoyer à l'agent
-                    # "status": "pending",                            # Initialise le statut à 'pending'
-                    # "response_data": None                           # Initialise response_data à None
                 })
 
             # if not agents_to_run:
@@ -223,16 +220,16 @@ class SuperAgent:
             #     super_agent_response["next_steps"] = {}
             #     break
 
-            # Étape 4: Exécuter les agents en parallèle avec leurs paramètres respectifs
+            # Step 4: Run agents in parallel with their respective parameters
             agent_results = self.run_agents_in_parallel(agents_to_run)
 
             # print(agent_results)
 
-            # Étape 5: Mettre à jour `agents_run` avec les résultats
+            # Step 5: Update `agents_run` with the results
             super_agent_response = self.compile_responses(super_agent_response, agent_results)
 
-            # Etape 6 :  Nouvelle soumission au llm
-            print("\n\n\n ALERTE NOUVELLE REQUETE !")
+            # Step 6: Resubmission to LLM
+            print("\n\n\n Resubmission to LLM !")
             super_agent_response = self.query(convert_json_to_string(super_agent_response))
             # return 0
 
@@ -243,6 +240,6 @@ class SuperAgent:
 if __name__ == "__main__":
     print("Program init !")
     super_agent = SuperAgent()
-    query = "Fais moi un portrait Mr Espérance AYIWAHOUN !"
+    query = "Draw me a portrait, Mr Espérance AYIWAHOUN!"
     response = super_agent.handle_query(query)
     print(json.dumps(response, indent=4))

@@ -27,7 +27,9 @@ def retry_wrapper(func):
             time.sleep(3)  # Attendre 3 secondes avant la prochaine tentative
         
         emit_agent("error", "Maximum attempts reached. The model keeps failing.")
-        sys.exit(1)  # Arrêter le programme après 5 échecs consécutifs
+        answer = {}
+        answer["is_final"] = ""
+        return answer
 
     return wrapper
 
