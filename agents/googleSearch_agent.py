@@ -47,6 +47,6 @@ class GoogleSearchAgent(Agent):
 
 if __name__ == '__main__':
     import json
-    test = GoogleSearchAgent(api_key="d615b5a79c503a1cd8a52d9c319e334828fcabd85c5fc67c7814a94bd3069445")
+    test = GoogleSearchAgent(api_key="")
     answer = test.run("Benjamin Tardy")
     print(answer)
