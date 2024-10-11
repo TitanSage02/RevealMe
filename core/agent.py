@@ -14,7 +14,7 @@ from utils.data_formatter import convert_json_format, convert_json_to_string, va
 from agents.linkedin_agent import LinkedinAgent
 from agents.facebook_agent import FacebookAgent
 from agents.breachData_agent import BreachData
-from agents.googleSearch_agent import GoogleSearch
+from agents.googleSearch_agent import GoogleSearchAgent
 from agents.github_agent import GithubAgent
 from agents.pilp_agent import PilpAgent
 from agents.whois_agent import WhoisAgent
@@ -29,27 +29,29 @@ from llm.gpt_o1 import GPTo1
 from llm.gemini import GeminiAI
 
 
+
+
 class SuperAgent:
     def __init__(self):
 
         print("SuperAgent init !")
 
         self.agent_name = "SuperOSINT"
-        self.brain = GPTo1()
-        #self.brain = GeminiAI()
+        #self.brain = GPTo1()
+        self.brain = GeminiAI()
         self.compteur = 0
         # self.task_manager = TaskManager()
         
         self.agent_mapping = {
-            "pilp_agent": PilpAgent(),
-            "whois_agent": WhoisAgent(),
-            "github_agent": GithubAgent(),
-            "twitter_agent": TwitterAgent(),
-            "breach_agent": BreachData(),
+            # "pilp_agent": PilpAgent(),
+            # "whois_agent": WhoisAgent(),
+            # "github_agent": GithubAgent(),
+            # "twitter_agent": TwitterAgent(),
+            # "breach_agent": BreachData(),
             "linkedin_agent": LinkedinAgent(),
-            "facebook_agent": FacebookAgent(),
-            "instagram_agent": InstagramAgent(),
-            "googlesearch_agent": GoogleSearch(),
+            # "facebook_agent": FacebookAgent(),
+            # "instagram_agent": InstagramAgent(),
+            "googlesearch_agent": GoogleSearchAgent(),
         }
 
         self.tools = {tool: self.agent_mapping[tool].description() for tool in self.agent_mapping}
@@ -249,6 +251,6 @@ class SuperAgent:
 if __name__ == "__main__":
     print("Program init !")
     super_agent = SuperAgent()
-    query = "Dis moi ce que tu connais de  Mr Abalo Hyppolyte !"
+    query = "Fais moi un portrait Mr Espérance AYIWAHOUN !"
     response = super_agent.handle_query(query)
     print(json.dumps(response, indent=4))

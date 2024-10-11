@@ -1,6 +1,6 @@
 
 import os
-from googleSearch_agent import GoogleSearchAgent
+from .googleSearch_agent import GoogleSearchAgent
 
 class LinkedinAgent(GoogleSearchAgent):
     def __init__(self, api_key = None):
@@ -30,10 +30,10 @@ class LinkedinAgent(GoogleSearchAgent):
                 
                 print(tmp, end="\n\n")
                 
-                if len(data) >= 5:
+                if len(data) >= 10:
                     break
             
-            # return data
+            return data
         
         except Exception as e:
             return {"error": f"Erreur lors de la recherche Google avec SerpAPI : {str(e)}"}

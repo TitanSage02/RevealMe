@@ -1,13 +1,15 @@
 import os
 import serpapi
-from base_agent import Agent
+from .base_agent import Agent
 
+from dotenv import load_dotenv
+load_dotenv()
 
 class GoogleSearchAgent(Agent):
     def __init__(self, name=None , api_key=None):
         
         try : 
-            self.client = serpapi.Client(api_key=os.getenv("API_KEY") or api_key)
+            self.client = serpapi.Client(api_key=os.getenv("SERP_API_KEY") or api_key)
         except Exception as e:
             raise ValueError("Clé API SerpAPI manquante. Veuillez fournir une clé ou définir 'SERP_API_KEY' dans les variables d'environnement.")
         
@@ -33,9 +35,9 @@ class GoogleSearchAgent(Agent):
                 tmp = "Title : \"{}\", Source_name : \"{}\", source_link : \"{}\"".format(result["title"], result["snippet"], result["source"])
                 data.append(tmp)
                 
-                # print(tmp, end="\n\n")
+                print(tmp, end="\n\n")
                 
-                if len(data) >= 5:
+                if len(data) >= 10:
                     break
             
 
