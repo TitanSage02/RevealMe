@@ -70,7 +70,7 @@ class SuperAgent:
         Sends a request to LLM to formulate a response strategy.
         """
         
-        time.sleep(5)
+        # time.sleep(5)
 
         data = {
             'agent_name': self.agent_name,
