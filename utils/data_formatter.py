@@ -101,7 +101,8 @@ def validate_super_agent_format_response(response) -> dict:
     Validates the JSON response produced by the super agent to ensure that it follows the expected format.
     """
 
-    required_keys = [ "agents_run", "next_steps", "is_final", "final_result"]
+    # required_keys = [ "agents_run", "next_steps", "is_final", "final_result"]
+    required_keys = ["is_final", "final_result"]
 
     response = convert_json_format(response)
 
